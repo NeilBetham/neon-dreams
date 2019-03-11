@@ -1,0 +1,9 @@
+#ifndef CONFIG_HPP
+#define CONFIG_HPP
+
+// WIFI Network and Credentials
+#define WIFI_SSID ""
+#define WIFI_PASS ""
+
+
+#endif // CONFIG_HPP
