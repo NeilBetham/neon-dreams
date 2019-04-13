@@ -16,8 +16,6 @@ public:
   void disable_hv() { gpio_set_level((gpio_num_t)hv_dis_pin, 1); };
   void enable_hv() { gpio_set_level((gpio_num_t)hv_dis_pin, 0); };
 
-  void tick(); // Runs cathode poison prevention at regular intervals
-
 private:
   spi_device_handle_t spi;
   spi_bus_config_t bus_config;
