@@ -3,6 +3,6 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := rollkit
+PROJECT_NAME := neon-dreams
 
 include $(IDF_PATH)/make/project.mk
