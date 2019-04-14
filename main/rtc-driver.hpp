@@ -26,7 +26,7 @@ public:
 private:
   i2c_port_t rtc_port;
 
-  bool twelve_hour_mode_enable;
+  bool twelve_hour_mode_enable = false;
 
   uint8_t sec;
   uint8_t min;

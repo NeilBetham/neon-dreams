@@ -27,9 +27,7 @@ bool RTCDriver::sync() {
   i2c_master_write_byte(cmd, 0x00, (i2c_ack_type_t)true);
   i2c_master_start(cmd);
   i2c_master_write_byte(cmd, 0xD0 | 0x01, (i2c_ack_type_t)true);
-  for(int i = 0; i < 7; i++){
-    i2c_master_read_byte(cmd, (uint8_t*)(&reg_status + i), (i2c_ack_type_t)true);
-  }
+  i2c_master_read(cmd, (uint8_t*)&reg_status, 7, I2C_MASTER_LAST_NACK );
   i2c_master_stop(cmd);
   esp_err_t ret = i2c_master_cmd_begin(rtc_port, cmd, 50 / portTICK_RATE_MS);
   i2c_cmd_link_delete(cmd);
@@ -41,7 +39,7 @@ bool RTCDriver::sync() {
 
   sec = (((reg_status[0] & 0x70) >> 4) * 10) + (0x0F & reg_status[0]);
   min = (((reg_status[1] & 0x70) >> 4) * 10) + (0x0F & reg_status[1]);
-  hour = (((reg_status[2] & (twelve_hour_mode_enable ? 0x10 : 0x03)) >> 4) * 10) + (0x0F & reg_status[2]);
+  hour = (((reg_status[2] & (twelve_hour_mode_enable ? 0x10 : 0x30)) >> 4) * 10) + (0x0F & reg_status[2]);
   dow = reg_status[3] & 0x07;
   date = (((reg_status[4] & 0x30) >> 4) * 10) + (0x0F & reg_status[4]);
   month = (((reg_status[5] & 0x10) >> 4) * 10) + (0x0F & reg_status[5]);

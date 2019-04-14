@@ -107,6 +107,7 @@ void configure_clock(struct tm& time_info) {
 
 void set_tubes() {
   rtc.sync();
+
   tm.set_digits(
     rtc.get_hour() / 10, rtc.get_hour() % 10,
     rtc.get_min() / 10, rtc.get_min() % 10,
@@ -130,8 +131,9 @@ struct tm get_ntp_time() {
   while(timeinfo.tm_year < (2016 - 1900) && ++retry < retry_count) {
       vTaskDelay(100);
       time(&now);
-      localtime_r(&now, &timeinfo);
+      localtime_r(&now, &timeinfo);    
   }
+  ESP_LOGI("TIME", "Current Time: %i:%i:%i", (int)timeinfo.tm_hour, (int)timeinfo.tm_min, (int)timeinfo.tm_sec);
   ESP_LOGI("NTP", "Clock synced");
 
   return timeinfo;
