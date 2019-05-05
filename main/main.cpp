@@ -131,7 +131,7 @@ struct tm get_ntp_time() {
   while(timeinfo.tm_year < (2016 - 1900) && ++retry < retry_count) {
       vTaskDelay(100);
       time(&now);
-      localtime_r(&now, &timeinfo);    
+      localtime_r(&now, &timeinfo);
   }
   ESP_LOGI("TIME", "Current Time: %i:%i:%i", (int)timeinfo.tm_hour, (int)timeinfo.tm_min, (int)timeinfo.tm_sec);
   ESP_LOGI("NTP", "Clock synced");
@@ -151,6 +151,7 @@ void app_main(void) {
   struct tm current_time = get_ntp_time();
 
   configure_clock(current_time);
+  set_tubes();
   tubes.enable_hv();
   uint8_t loop_count = 0;
   while(1) {

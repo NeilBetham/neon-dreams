@@ -5,7 +5,7 @@
 #include <time.h>
 
 
-TubeManager::TubeManager(TubeDriver& _td) : td(_td), poison_prev_int(30), poison_prev_dur(10) {};
+TubeManager::TubeManager(TubeDriver& _td) : td(_td), poison_prev_int(300), poison_prev_dur(10) {};
 
 void TubeManager::set_digits(uint8_t _one, uint8_t _two, uint8_t _three, uint8_t _four, uint8_t _five, uint8_t _six) {
   one = _one;
