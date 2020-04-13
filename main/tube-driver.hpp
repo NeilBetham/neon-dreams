@@ -15,6 +15,7 @@ public:
 
   void disable_hv() { gpio_set_level((gpio_num_t)hv_dis_pin, 1); };
   void enable_hv() { gpio_set_level((gpio_num_t)hv_dis_pin, 0); };
+  bool hv_enabled() { return (bool)gpio_get_level((gpio_num_t)hv_dis_pin); }
 
 private:
   spi_device_handle_t spi;

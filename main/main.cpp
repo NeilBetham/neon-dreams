@@ -32,6 +32,8 @@
 #include "rtc-driver.hpp"
 #include "tube-manager.hpp"
 
+#include "rollkit.hpp"
+
 
 #define GPIO_OUTPUT_IO_LE        15
 #define GPIO_OUTPUT_IO_POL       16
@@ -50,7 +52,42 @@ RTCDriver rtc(RTC_I2C_PORT, RTC_I2C_SDA, RTC_I2C_SCL);
 TubeDriver tubes(SPI_MOSI, SPI_SCLK, GPIO_OUTPUT_IO_LE, GPIO_OUTPUT_IO_POL, GPIO_OUTPUT_IO_BL, GPIO_OUTPUT_IO_HV_DIS);
 TubeManager tm(tubes);
 
+rollkit::App rollkit_app;
+rollkit::Accessory acc;
+rollkit::Service acc_switch;
+rollkit::Characteristic acc_switch_on_char;
+rollkit::Characteristic acc_switch_name_char;
+
 EventGroupHandle_t wifi_event_group;
+
+void init_rollkit() {
+  rollkit_app.init(ACC_NAME, ACC_MODEL, ACC_MANUFACTURER, ACC_FIRMWARE_REVISION, ACC_SETUP_CODE);
+
+  acc_switch_on_char = rollkit::Characteristic(
+    APPL_CHAR_UUID_ON,
+    [](nlohmann::json v){ if((bool)v.get<int>()) { tubes.enable_hv(); } else { tubes.disable_hv(); }},
+    []() -> nlohmann::json { return tubes.hv_enabled(); },
+    "bool",
+    {"pr", "pw", "ev"}
+  );
+  acc_switch_name_char = rollkit::Characteristic(
+    APPL_CHAR_UUID_NAME,
+    [](nlohmann::json v){},
+    []() -> nlohmann::json { ESP_LOGD("acc", "Switch Name Read"); return "Tubes"; },
+    "string",
+    {"pr"}
+  );
+  acc_switch = rollkit::Service(
+    APPL_SRVC_UUID_SWITCH,
+    false,
+    true
+  );
+  acc_switch.register_characteristic(acc_switch_on_char);
+  acc_switch.register_characteristic(acc_switch_name_char);
+  acc.register_service(acc_switch);
+  rollkit_app.register_accessory(acc);
+  rollkit_app.start();
+}
 
 
 esp_err_t wifi_event_handler(void *ctx, system_event_t *event)
@@ -151,6 +188,7 @@ void app_main(void) {
   struct tm current_time = get_ntp_time();
 
   configure_clock(current_time);
+  init_rollkit();
   set_tubes();
   tubes.enable_hv();
   uint8_t loop_count = 0;
