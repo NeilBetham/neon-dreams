@@ -3,16 +3,20 @@
 #include <esp_err.h>
 
 
-RTCDriver::RTCDriver(uint8_t esp_i2c_port_num, uint8_t sda, uint8_t scl) {
-  rtc_port = (i2c_port_t)esp_i2c_port_num;
+RTCDriver::RTCDriver(uint8_t esp_i2c_port_num, uint8_t sda, uint8_t scl) :
+  _esp_i2c_port_num(esp_i2c_port_num), _sda(sda), _scl(scl) {}
+
+void RTCDriver::init() {
+  rtc_port = (i2c_port_t)_esp_i2c_port_num;
 
   i2c_config_t rtc_comm_conf;
   rtc_comm_conf.mode = I2C_MODE_MASTER;
-  rtc_comm_conf.sda_io_num = (gpio_num_t)sda;
+  rtc_comm_conf.sda_io_num = (gpio_num_t)_sda;
   rtc_comm_conf.sda_pullup_en = GPIO_PULLUP_DISABLE;
-  rtc_comm_conf.scl_io_num = (gpio_num_t)scl;
+  rtc_comm_conf.scl_io_num = (gpio_num_t)_scl;
   rtc_comm_conf.scl_pullup_en = GPIO_PULLUP_DISABLE;
   rtc_comm_conf.master.clk_speed = 200000;  // 400kHz max
+  rtc_comm_conf.clk_flags = I2C_SCLK_SRC_FLAG_FOR_NOMAL;
 
   i2c_param_config(rtc_port, &rtc_comm_conf);
   ESP_ERROR_CHECK(i2c_driver_install(rtc_port, I2C_MODE_MASTER, 0, 0, 0));

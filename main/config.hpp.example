@@ -5,5 +5,11 @@
 #define WIFI_SSID ""
 #define WIFI_PASS ""
 
+// Accessory Details
+#define ACC_NAME "Example"
+#define ACC_MODEL "A"
+#define ACC_MANUFACTURER "ExampleCorp"
+#define ACC_FIRMWARE_REVISION "v1.0"
+#define ACC_SETUP_CODE "123-45-678"
 
 #endif // CONFIG_HPP

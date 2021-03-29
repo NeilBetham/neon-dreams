@@ -10,6 +10,7 @@ public:
   RTCDriver(uint8_t esp_i2c_port_num, uint8_t sda_pin, uint8_t scl_pin);
   ~RTCDriver() {};
 
+  void init();
   bool set_clock(uint8_t new_sec, uint8_t new_min, uint8_t new_hour,
                  uint8_t new_dow, uint8_t new_date, uint8_t new_month,
                  uint16_t new_year);
@@ -24,6 +25,10 @@ public:
   uint16_t get_year() { return year; };
 
 private:
+  uint8_t _esp_i2c_port_num;
+  uint8_t _sda;
+  uint8_t _scl;
+
   i2c_port_t rtc_port;
 
   bool twelve_hour_mode_enable = false;
