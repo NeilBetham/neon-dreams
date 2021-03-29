@@ -61,6 +61,9 @@ rollkit::Characteristic acc_switch_name_char;
 
 EventGroupHandle_t wifi_event_group;
 
+bool time_set = false;
+
+
 void init_rollkit(const std::string& mac) {
   rollkit_app.init(ACC_NAME, ACC_MODEL, ACC_MANUFACTURER, ACC_FIRMWARE_REVISION, ACC_SETUP_CODE, mac);
 
@@ -220,10 +223,42 @@ void update_rtc() {
 }
 
 
+TaskHandle_t main_task_handle;
+void main_task(void* ctx_ptr) {
+  tubes.enable_hv();
+  while(1) {
+    vTaskDelay(10 / portTICK_PERIOD_MS);
+    tm.tick_10ms();
+
+    if(!time_set) {
+      continue;
+    }
+
+    static uint32_t set_tube_timer = 1;
+    if(set_tube_timer % 10 == 0) {
+      set_tubes();
+      set_tube_timer = 0;
+    }
+    set_tube_timer++;
+
+
+    static uint32_t sync_timer = 1;
+    if(sync_timer % 3600000 == 0) {
+      ESP_LOGI("NTP", "Updating RTC Clock");
+      update_rtc();
+      sync_timer = 0;
+    }
+    sync_timer++;
+  }
+}
+
+
 extern "C" {
 	void app_main(void);
 }
 void app_main(void) {
+  xTaskCreatePinnedToCore(&main_task, "main_task", 20000, NULL, 1, &main_task_handle, 0);
+
   ESP_ERROR_CHECK(nvs_flash_init());
   config_wifi();
   init_ntp();
@@ -236,26 +271,7 @@ void app_main(void) {
   sprintf(&mac_address[0], "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
   set_tubes();
-  tubes.enable_hv();
   init_rollkit(mac_address);
-  while(1) {
-    vTaskDelay(10 / portTICK_PERIOD_MS);
-    tm.tick_10ms();
 
-    static uint32_t set_tube_timer = 0;
-    if(set_tube_timer % 10 == 0) {
-      set_tubes();
-      set_tube_timer = 0;
-    }
-    set_tube_timer++;
-
-
-    static uint32_t sync_timer = 0;
-    if(sync_timer % 3600000 == 0) {
-      ESP_LOGI("NTP", "Updating RTC Clock");
-      update_rtc();
-      sync_timer = 0;
-    }
-    sync_timer++;
-  }
+  time_set = true;
 }

@@ -26,12 +26,17 @@ private:
   bool poison_prev_active;
   uint8_t one_index;
 
-  uint8_t one;
-  uint8_t two;
-  uint8_t three;
-  uint8_t four;
-  uint8_t five;
-  uint8_t six;
+  bool digits_set = false;
+  int8_t scan_pos = 0;
+  bool scan_increment = true;
+  uint32_t scan_count = 0;
+
+  int8_t one;
+  int8_t two;
+  int8_t three;
+  int8_t four;
+  int8_t five;
+  int8_t six;
 };
 
 

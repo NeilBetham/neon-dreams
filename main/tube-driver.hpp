@@ -11,7 +11,7 @@ public:
              uint8_t _le_pin, uint8_t _pol_pin, uint8_t _blank_pin, uint8_t _hv_dis_pin);
   ~TubeDriver() {};
 
-  void set_tubes(uint8_t one, uint8_t two, uint8_t three, uint8_t four, uint8_t five, uint8_t six);
+  void set_tubes(int8_t one, int8_t two, int8_t three, int8_t four, int8_t five, int8_t six);
 
   void disable_hv() { gpio_set_level((gpio_num_t)hv_dis_pin, 1); };
   void enable_hv() { gpio_set_level((gpio_num_t)hv_dis_pin, 0); };

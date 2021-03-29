@@ -14,10 +14,50 @@ void TubeManager::set_digits(uint8_t _one, uint8_t _two, uint8_t _three, uint8_t
   four = _four;
   five = _five;
   six = _six;
+
+  digits_set = true;
 }
 
 
 void TubeManager::tick_10ms() {
+  if(!digits_set) {
+    if(scan_count % 10 == 0) {
+      if(scan_increment) {
+        scan_pos++;
+      } else {
+        scan_pos--;
+      }
+
+      if(scan_pos >= 6) {
+        scan_increment = false;
+        scan_pos = 6;
+      } else if(scan_pos <= 1) {
+        scan_increment = true;
+        scan_pos = 1;
+      }
+
+      // Update the tubes
+      one = (0x02 >> scan_pos) & 0x01;
+      two = (0x04 >> scan_pos) & 0x01;
+      three = (0x08 >> scan_pos) & 0x01;
+      four = (0x10 >> scan_pos) & 0x01;
+      five = (0x20 >> scan_pos) & 0x01;
+      six = (0x40 >> scan_pos) & 0x01;
+
+      one = one > 0 ? one : -1;
+      two = two > 0 ? two : -1;
+      three = three > 0 ? three : -1;
+      four = four > 0 ? four : -1;
+      five = five > 0 ? five : -1;
+      six = six > 0 ? six : -1;
+    }
+
+    scan_count++;
+
+    td.set_tubes(one, two, three, four, five, six);
+    return;
+  }
+
   time_t now = 0;
   time(&now);
 

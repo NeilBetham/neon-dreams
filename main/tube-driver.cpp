@@ -64,7 +64,7 @@ TubeDriver::TubeDriver(uint8_t mosi_pin, uint8_t sclk_pin, uint8_t _le_pin, uint
 }
 
 
-void TubeDriver::set_tubes(uint8_t one, uint8_t two, uint8_t three, uint8_t four, uint8_t five, uint8_t six){
+void TubeDriver::set_tubes(int8_t one, int8_t two, int8_t three, int8_t four, int8_t five, int8_t six){
   typedef struct {
     uint8_t nc1:2;
     uint16_t six:10;
@@ -81,12 +81,12 @@ void TubeDriver::set_tubes(uint8_t one, uint8_t two, uint8_t three, uint8_t four
 
   memset(&cathode_enables, 0x00, sizeof(cathode_enables_t));
 
-  cathode_enables.one = (0x0200 >> one);
-  cathode_enables.two = (0x0200 >> two);
-  cathode_enables.three = (0x0200 >> three);
-  cathode_enables.four = (0x0200 >> four);
-  cathode_enables.five = (0x0200 >> five);
-  cathode_enables.six = (0x0200 >> six);
+  cathode_enables.one = (0x0200 >> one) & (one > -1 ? 0xFFFF : 0x0000);
+  cathode_enables.two = (0x0200 >> two) & (two > -1 ? 0xFFFF : 0x0000);
+  cathode_enables.three = (0x0200 >> three) & (three > -1 ? 0xFFFF : 0x0000);
+  cathode_enables.four = (0x0200 >> four) & (four > -1 ? 0xFFFF : 0x0000);
+  cathode_enables.five = (0x0200 >> five) & (five > -1 ? 0xFFFF : 0x0000);
+  cathode_enables.six = (0x0200 >> six) & (six > -1 ? 0xFFFF : 0x0000);
 
   cathode_enables.nc1 = 0;
   cathode_enables.nc2 = 0;
