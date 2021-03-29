@@ -118,7 +118,8 @@ void config_wifi() {
   wifi_event_group = xEventGroupCreate();
 
   ESP_ERROR_CHECK(esp_event_loop_create_default());
-  esp_netif_create_default_wifi_sta();
+  auto net_if = esp_netif_create_default_wifi_sta();
+  ESP_ERROR_CHECK(esp_netif_set_hostname(net_if, "NixieClock"));
 
   wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
   ESP_ERROR_CHECK(esp_wifi_init(&cfg));
